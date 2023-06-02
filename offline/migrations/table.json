@@ -1,13 +1,21 @@
 {
   "Table": {
-    "TableName": "serverless-http-api-dynamodb-local-dev",
+    "TableName": "game-hub-user-api-dev",
     "KeySchema": [
       {
-        "AttributeName": "id",
+        "AttributeName": "entityType",
         "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "id",
+        "KeyType": "RANGE"
       }
     ],
     "AttributeDefinitions": [
+      {
+        "AttributeName": "entityType",
+        "AttributeType": "S"
+      },
       {
         "AttributeName": "id",
         "AttributeType": "S"

@@ -1,5 +1,5 @@
 import {
-	DynamoDBClient,
+	DynamoDB,
 	ScanCommand,
 	PutItemCommand,
 	GetItemCommand,
@@ -16,7 +16,7 @@ if (process.env.IS_OFFLINE) {
 	}
 }
 
-const dynamoDbClient = new DynamoDBClient(options)
+const dynamoDbClient = new DynamoDB(options)
 
 export {
 	dynamoDbClient,

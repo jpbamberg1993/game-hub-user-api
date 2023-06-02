@@ -22,10 +22,15 @@ export async function update(req, res) {
 
 	const params = {
 		TableName: process.env.DYNAMODB_TABLE,
-		Key: marshall({ id }),
-		UpdateExpression: `SET #todo_text = :text, checked = :checked, updatedAt = :updatedAt`,
+		Key: marshall({
+			id,
+			entityType: `Todo`,
+		}),
+		UpdateExpression: `SET #todo_text = :text, #todo_checked = :checked, #todo_updatedAt = :updatedAt`,
 		ExpressionAttributeNames: {
 			'#todo_text': `text`,
+			'#todo_checked': `checked`,
+			'#todo_updatedAt': `updatedAt`,
 		},
 		ExpressionAttributeValues: marshall({
 			':text': text,

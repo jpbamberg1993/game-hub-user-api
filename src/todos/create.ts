@@ -20,6 +20,7 @@ export async function create(req, res) {
 			id: uuid4(),
 			text: text,
 			checked: false,
+			entityType: `Todo`,
 			createdAt: timestamp,
 			updatedAt: timestamp,
 		}),

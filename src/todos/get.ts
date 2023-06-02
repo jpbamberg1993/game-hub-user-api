@@ -1,9 +1,4 @@
-import {
-	dynamoDbClient,
-	GetItemCommand,
-	marshall,
-	unmarshall,
-} from '../../dynamodb/dynamo-db'
+import { dynamoDbClient, marshall, unmarshall } from '../../dynamodb/dynamo-db'
 
 export async function get(req, res) {
 	const { id } = req.params
@@ -15,15 +10,23 @@ export async function get(req, res) {
 
 	const params = {
 		TableName: process.env.DYNAMODB_TABLE,
-		Key: marshall({ id }),
+		KeyConditionExpression: `#pk = :id and #sk = :entityType`,
+		ExpressionAttributeNames: {
+			'#pk': `id`,
+			'#sk': `entityType`,
+		},
+		ExpressionAttributeValues: marshall({
+			':id': id,
+			':entityType': `Todo`,
+		}),
 	}
 
 	try {
-		const { Item } = await dynamoDbClient.send(new GetItemCommand(params))
-		if (!Item) {
+		const { Items } = await dynamoDbClient.query(params)
+		if (!Items) {
 			return res.status(404).json({ error: `Could not find todo item` })
 		}
-		res.json(unmarshall(Item))
+		res.json(unmarshall({ ...Items[0] }))
 	} catch (error) {
 		console.log(error)
 		res

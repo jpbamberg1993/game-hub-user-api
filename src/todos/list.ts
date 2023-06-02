@@ -1,16 +1,13 @@
-import {
-	dynamoDbClient,
-	ScanCommand,
-	unmarshall,
-} from '../../dynamodb/dynamo-db'
+import { dynamoDbClient, marshall, unmarshall } from '../../dynamodb/dynamo-db'
 
 export async function list(req, res) {
 	const params = {
 		TableName: process.env.DYNAMODB_TABLE,
+		Key: marshall({ entityType: `Todo` }),
 	}
 
 	try {
-		const { Items } = await dynamoDbClient.send(new ScanCommand(params))
+		const { Items } = await dynamoDbClient.scan(params)
 		if (!Items) {
 			return res.status(404).json({ error: `Could not find todos` })
 		}
