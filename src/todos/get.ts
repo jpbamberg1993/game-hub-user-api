@@ -1,4 +1,9 @@
-import { dynamoDbClient, marshall, unmarshall } from '../../dynamodb/dynamo-db'
+import {
+	ddbDocClient,
+	marshall,
+	unmarshall,
+	QueryCommand,
+} from '../../dynamodb/dynamo-db'
 
 export async function get(req, res) {
 	const { id } = req.params
@@ -22,7 +27,7 @@ export async function get(req, res) {
 	}
 
 	try {
-		const { Items } = await dynamoDbClient.query(params)
+		const { Items } = await ddbDocClient.send(new QueryCommand(params))
 		if (!Items) {
 			return res.status(404).json({ error: `Could not find todo item` })
 		}

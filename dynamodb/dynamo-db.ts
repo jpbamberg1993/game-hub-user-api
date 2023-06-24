@@ -1,13 +1,12 @@
 import {
-	DynamoDB,
-	ScanCommand,
-	PutItemCommand,
+	DynamoDBClient,
 	GetItemCommand,
-	UpdateItemCommand,
+	PutItemCommand,
 	QueryCommand,
+	ScanCommand,
+	UpdateItemCommand,
 } from '@aws-sdk/client-dynamodb'
-import { unmarshall, marshall } from '@aws-sdk/util-dynamodb'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 let options = {}
 
@@ -18,16 +17,9 @@ if (process.env.IS_OFFLINE) {
 	}
 }
 
-const dynamoDbClient = new DynamoDB(options)
-
-const ddbDocClient = DynamoDBDocumentClient.from(dynamoDbClient, {
-	marshallOptions: {
-		removeUndefinedValues: true,
-	},
-})
+const ddbDocClient = new DynamoDBClient(options)
 
 export {
-	dynamoDbClient,
 	ddbDocClient,
 	ScanCommand,
 	PutItemCommand,

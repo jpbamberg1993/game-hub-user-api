@@ -1,5 +1,5 @@
 import {
-	dynamoDbClient,
+	ddbDocClient,
 	marshall,
 	PutItemCommand,
 	unmarshall,
@@ -27,7 +27,7 @@ export async function create(req, res) {
 	}
 
 	try {
-		await dynamoDbClient.send(new PutItemCommand(params))
+		await ddbDocClient.send(new PutItemCommand(params))
 		return res.json(unmarshall(params.Item))
 	} catch (error) {
 		console.log(error)

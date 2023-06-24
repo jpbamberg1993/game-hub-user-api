@@ -1,5 +1,5 @@
 import {
-	dynamoDbClient,
+	ddbDocClient,
 	marshall,
 	unmarshall,
 	UpdateItemCommand,
@@ -41,7 +41,7 @@ export async function update(req, res) {
 	}
 
 	try {
-		const { Attributes } = await dynamoDbClient.send(
+		const { Attributes } = await ddbDocClient.send(
 			new UpdateItemCommand(params)
 		)
 		res.json(unmarshall(Attributes))
