@@ -1,0 +1,35 @@
+import {
+	ddbDocClient,
+	marshall,
+	unmarshall,
+	QueryCommand,
+} from '../../dynamodb/dynamo-db'
+
+export async function list(req, res) {
+	const params = {
+		TableName: process.env.DYNAMODB_TABLE,
+		KeyConditionExpression: `#entityType = :entityType`,
+		ExpressionAttributeNames: {
+			'#entityType': `entityType`,
+		},
+		ExpressionAttributeValues: marshall({
+			':entityType': `Game`,
+		}),
+	}
+
+	const command = new QueryCommand(params)
+
+	try {
+		const { Items } = await ddbDocClient.send(command)
+		if (!Items) {
+			return res.status(404).json({ error: `Could not find games` })
+		}
+		const items = Items.map((item) => unmarshall(item)).sort(
+			(a, b) => b.updatedAt - a.updatedAt
+		)
+		res.json(items)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ error: `Could not retrieve games` })
+	}
+}

@@ -2,6 +2,7 @@ import express from 'express'
 import serverless from 'serverless-http'
 // import cors from 'cors';
 import todoRouter from './todos'
+import gamesRouter from './games'
 
 const app = express()
 
@@ -9,6 +10,7 @@ const app = express()
 app.use(express.json())
 
 app.use(`/todos`, todoRouter)
+app.use(`/games`, gamesRouter)
 
 app.use((req, res) => {
 	return res.status(404).json({
