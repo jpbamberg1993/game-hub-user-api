@@ -1,13 +1,26 @@
-import { dynamoDbClient, marshall, unmarshall } from '../../dynamodb/dynamo-db'
+import {
+	ddbDocClient,
+	QueryCommand,
+	marshall,
+	unmarshall,
+} from '../../dynamodb/dynamo-db'
 
 export async function list(req, res) {
 	const params = {
 		TableName: process.env.DYNAMODB_TABLE,
-		Key: marshall({ entityType: `Todo` }),
+		KeyConditionExpression: `#entityType = :entityType`,
+		ExpressionAttributeNames: {
+			'#entityType': `entityType`,
+		},
+		ExpressionAttributeValues: marshall({
+			':entityType': `Todo`,
+		}),
 	}
 
+	const command = new QueryCommand(params)
+
 	try {
-		const { Items } = await dynamoDbClient.scan(params)
+		const { Items } = await ddbDocClient.send(command)
 		if (!Items) {
 			return res.status(404).json({ error: `Could not find todos` })
 		}
