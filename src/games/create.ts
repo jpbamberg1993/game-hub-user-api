@@ -25,7 +25,6 @@ export async function create(req, res) {
 		metacritic,
 		playtime,
 		suggestionsCount,
-		updated,
 		esrbRating,
 		platforms,
 	} = req.body
@@ -54,7 +53,6 @@ export async function create(req, res) {
 				metacritic,
 				playtime,
 				suggestionsCount,
-				updated,
 				esrbRating,
 				platforms,
 			},
