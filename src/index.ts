@@ -3,6 +3,7 @@ import serverless from 'serverless-http'
 // import cors from 'cors';
 import todoRouter from './todos'
 import gamesRouter from './games'
+import { snakeToCamelCase } from './middleware/snake-to-camel-case'
 
 const app = express()
 
@@ -10,7 +11,7 @@ const app = express()
 app.use(express.json())
 
 app.use(`/todos`, todoRouter)
-app.use(`/games`, gamesRouter)
+app.use(`/games`, snakeToCamelCase, gamesRouter)
 
 app.use((req, res) => {
 	return res.status(404).json({
