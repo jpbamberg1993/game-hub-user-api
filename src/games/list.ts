@@ -1,5 +1,5 @@
 import { HttpRequest, HttpResponse } from '../express-callback'
-import { GamesRepository, DataError } from './games.repository'
+import { DataError, GamesRepository } from './games.repository'
 import { Nullable } from '../types/utility-types'
 
 export type ListGames = (httpRequest: HttpRequest) => Promise<HttpResponse>
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export function makeList({ gamesRepository }: Props): ListGames {
-	return async function list(httpRequest: HttpRequest): Promise<HttpResponse> {
+	return async function list(): Promise<HttpResponse> {
 		const { data, error } = await gamesRepository.list()
 
 		if (error || !data) {
