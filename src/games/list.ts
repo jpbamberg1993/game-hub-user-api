@@ -1,8 +1,8 @@
-import { HttpRequest, HttpResponse } from '../express-callback'
-import { DataError, GamesRepository } from './games.repository'
-import { Nullable } from '../types/utility-types'
+import { HttpResponse } from '../express-callback'
+import { GamesRepository } from './games.repository'
+import { getErrorMessage } from '../utils/get-error-message'
 
-export type ListGames = (httpRequest: HttpRequest) => Promise<HttpResponse>
+export type ListGames = () => Promise<HttpResponse>
 
 type Props = {
 	gamesRepository: GamesRepository
@@ -33,12 +33,5 @@ export function makeList({ gamesRepository }: Props): ListGames {
 			statusCode: 200,
 			body: { results: sortedGames },
 		}
-	}
-
-	function getErrorMessage(error: Nullable<DataError>) {
-		if (error && error.statusCode < 500) {
-			return error.message
-		}
-		return `An unknown error occurred.`
 	}
 }

@@ -1,71 +1,37 @@
-import {
-	ddbDocClient,
-	marshall,
-	PutItemCommand,
-	unmarshall,
-} from '../../dynamodb/dynamo-db'
-import { v4 as uuid } from 'uuid'
-import { Request, Response } from 'express'
+import { GamesRepository } from './games.repository'
+import { HttpRequest, HttpResponse } from '../express-callback'
+import { getErrorMessage } from '../utils/get-error-message'
 
-export async function create(req: Request, res: Response) {
-	const timestamp = new Date().getTime()
+export type CreateGame = (httpRequest: HttpRequest) => Promise<HttpResponse>
 
-	const {
-		slug,
-		name,
-		released,
-		tba,
-		backgroundImage,
-		rating,
-		ratingTop,
-		ratings,
-		ratingsCount,
-		reviewsTextCount,
-		added,
-		addedByStatus,
-		metacritic,
-		playtime,
-		suggestionsCount,
-		esrbRating,
-		platforms,
-	} = req.body
+type Props = {
+	gamesRepository: GamesRepository
+}
 
-	const params = {
-		TableName: process.env.DYNAMODB_TABLE,
-		Item: marshall(
-			{
-				id: uuid(),
-				entityType: `Game`,
-				createdAt: timestamp,
-				updatedAt: timestamp,
-				sourceId: 1,
-				slug,
-				name,
-				released,
-				tba,
-				backgroundImage,
-				rating,
-				ratingTop,
-				ratings,
-				ratingsCount,
-				reviewsTextCount,
-				added,
-				addedByStatus,
-				metacritic,
-				playtime,
-				suggestionsCount,
-				esrbRating,
-				platforms,
+export function makeCreateGame({ gamesRepository }: Props): CreateGame {
+	return async function create(
+		httpRequest: HttpRequest
+	): Promise<HttpResponse> {
+		const { data, error } = await gamesRepository.create(httpRequest.body)
+
+		if (error || !data) {
+			return {
+				headers: {
+					'Content-Type': `application/json`,
+				},
+				statusCode: error?.statusCode ?? 404,
+				body: {
+					error: getErrorMessage(error),
+				},
+			}
+		}
+
+		return {
+			headers: {
+				'Content-Type': `application/json`,
 			},
-			{ removeUndefinedValues: true }
-		),
-	}
-
-	try {
-		await ddbDocClient.send(new PutItemCommand(params))
-		return res.json(unmarshall(params.Item))
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ error: `Could not create todo item` })
+			statusCode: 200,
+			body: { results: data },
+		}
 	}
 }

@@ -1,6 +1,12 @@
-import { marshall, QueryCommand, unmarshall } from '../../dynamodb/dynamo-db'
-import { Game } from './game.schema'
+import { v4 as uuid } from 'uuid'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import {
+	marshall,
+	QueryCommand,
+	unmarshall,
+	PutItemCommand,
+} from '../../dynamodb/dynamo-db'
+import { CreateGame, Game } from './game.schema'
 
 export type DataError = {
 	statusCode: number
@@ -14,6 +20,7 @@ export type RepositoryResponse<T> = {
 
 export type GamesRepository = {
 	list: () => Promise<RepositoryResponse<Game[]>>
+	create: (game: CreateGame) => Promise<RepositoryResponse<Game>>
 }
 
 type Props = {
@@ -23,6 +30,7 @@ type Props = {
 export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 	return Object.freeze({
 		list,
+		create,
 	})
 
 	async function list(): Promise<RepositoryResponse<Game[]>> {
@@ -59,6 +67,40 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 				error: {
 					statusCode: 500,
 					message: `Could not retrieve games`,
+				},
+			}
+		}
+	}
+
+	async function create(game: CreateGame): Promise<RepositoryResponse<Game>> {
+		const timestamp = new Date().getTime()
+
+		const params = {
+			TableName: process.env.DYNAMODB_TABLE,
+			Item: marshall(
+				{
+					id: uuid(),
+					entityType: `Game`,
+					createdAt: timestamp,
+					updatedAt: timestamp,
+					sourceId: 0,
+					...game,
+				},
+				{ removeUndefinedValues: true }
+			),
+		}
+
+		try {
+			await ddbDocClient.send(new PutItemCommand(params))
+			return {
+				data: unmarshall(params.Item) as Game,
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				error: {
+					statusCode: 500,
+					message: `Could not create game`,
 				},
 			}
 		}
