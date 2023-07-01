@@ -5,8 +5,9 @@ import {
 	unmarshall,
 } from '../../dynamodb/dynamo-db'
 import { v4 as uuid } from 'uuid'
+import { Request, Response } from 'express'
 
-export async function create(req, res) {
+export async function create(req: Request, res: Response) {
 	const timestamp = new Date().getTime()
 
 	const {

@@ -1,6 +1,6 @@
-import { Request, Response } from 'express'
 import { HttpRequest, HttpResponse } from '../express-callback'
-import { GamesRepository } from './games.repository'
+import { GamesRepository, DataError } from './games.repository'
+import { Nullable } from '../types/utility-types'
 
 export type ListGames = (httpRequest: HttpRequest) => Promise<HttpResponse>
 
@@ -10,28 +10,35 @@ type Props = {
 
 export function makeList({ gamesRepository }: Props): ListGames {
 	return async function list(httpRequest: HttpRequest): Promise<HttpResponse> {
-		try {
-			const games = await gamesRepository.list()
-			if (!games) {
-				return {
-					headers: {
-						'Content-Type': `application/json`,
-					},
-					statusCode: 404,
-					body: { error: `Could not find games` },
-				}
-			}
-			const sortedGames = games.sort((a, b) => b.updatedAt - a.updatedAt)
+		const { data, error } = await gamesRepository.list()
+
+		if (error || !data) {
 			return {
 				headers: {
 					'Content-Type': `application/json`,
 				},
-				statusCode: 200,
-				body: { results: sortedGames },
+				statusCode: error?.statusCode ?? 404,
+				body: {
+					error: getErrorMessage(error),
+				},
 			}
-		} catch (error) {
-			console.log(error)
-			res.status(500).json({ error: `Could not retrieve games` })
 		}
+
+		const sortedGames = data.sort((a, b) => b.updatedAt - a.updatedAt)
+
+		return {
+			headers: {
+				'Content-Type': `application/json`,
+			},
+			statusCode: 200,
+			body: { results: sortedGames },
+		}
+	}
+
+	function getErrorMessage(error: Nullable<DataError>) {
+		if (error && error.statusCode < 500) {
+			return error.message
+		}
+		return `An unknown error occurred.`
 	}
 }

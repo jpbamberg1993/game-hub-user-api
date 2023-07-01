@@ -4,8 +4,9 @@ import {
 	unmarshall,
 	QueryCommand,
 } from '../../dynamodb/dynamo-db'
+import { Request, Response } from 'express'
 
-export async function get(req, res) {
+export async function get(req: Request, res: Response) {
 	const { id } = req.params
 
 	if (!id || typeof id !== `string`) {

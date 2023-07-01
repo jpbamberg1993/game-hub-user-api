@@ -4,13 +4,14 @@ import {
 	unmarshall,
 	UpdateItemCommand,
 } from '../../dynamodb/dynamo-db'
+import { Request, Response } from 'express'
 
-export async function update(req, res) {
+export async function update(req: Request, res: Response) {
 	const timestamp = new Date().getTime()
 	const { id } = req.params
 	const { text, checked } = req.body
 
-	if (!id || typeof id !== `string`) {
+	if (!id) {
 		console.error(`Validation Failed`)
 		res.status(400).json({ error: `Must provide an id` })
 	}
@@ -44,6 +45,9 @@ export async function update(req, res) {
 		const { Attributes } = await ddbDocClient.send(
 			new UpdateItemCommand(params)
 		)
+		if (!Attributes) {
+			return res.status(400).json({ error: `Could not update todo item` })
+		}
 		res.json(unmarshall(Attributes))
 	} catch (error) {
 		console.log(error)

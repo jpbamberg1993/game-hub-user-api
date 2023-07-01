@@ -4,8 +4,9 @@ import {
 	marshall,
 	unmarshall,
 } from '../../dynamodb/dynamo-db'
+import { Request, Response } from 'express'
 
-export async function list(req, res) {
+export async function list(req: Request, res: Response) {
 	const params = {
 		TableName: process.env.DYNAMODB_TABLE,
 		KeyConditionExpression: `#entityType = :entityType`,

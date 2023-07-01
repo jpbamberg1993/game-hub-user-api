@@ -1,35 +1,36 @@
 import { Request, Response } from 'express'
 
-export type HttpRequestHeaders = {
-	// eslint-disable-next-line
-	'Content-Type': string
-	Referer: string
-	// eslint-disable-next-line
-	'User-Agent': string
-}
-
+// Define the httpRequest and httpResponse types
 export type HttpRequest = {
-	body?: unknown
-	query?: unknown
-	params?: unknown
-	ip?: string
+	body: any
+	query: any
+	params: any
+	ip: string
 	method: string
-	path: string
-	headers: HttpRequestHeaders
+	path: string | undefined
+	headers: {
+		// eslint-disable-next-line
+		'Content-Type': string | undefined
+		Referer: string | undefined
+		// eslint-disable-next-line
+		'User-Agent': string | undefined
+	}
 }
 
 export type HttpResponse = {
 	headers?: {
-		// eslint-disable-next-line
-		'Content-Type': string
+		[key: string]: string
 	}
 	statusCode: number
-	body: unknown
+	body: any
 }
 
-export function makeExpressCallback(controller: unknown) {
+// Define the controller type
+type Controller = (httpRequest: HttpRequest) => Promise<HttpResponse>
+
+export function makeExpressCallback(controller: Controller) {
 	return (req: Request, res: Response) => {
-		const httpRequest = {
+		const httpRequest: HttpRequest = {
 			body: req.body,
 			query: req.query,
 			params: req.params,
@@ -43,7 +44,7 @@ export function makeExpressCallback(controller: unknown) {
 			},
 		}
 		controller(httpRequest)
-			.then((httpResponse) => {
+			.then((httpResponse: HttpResponse) => {
 				if (httpResponse.headers) {
 					res.set(httpResponse.headers)
 				}
