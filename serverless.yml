@@ -46,6 +46,7 @@ provider:
 functions:
   api:
     handler: src/index.handler
+    environment: ${file(env.${sls:stage, self:provider.stage}.json)}
     events:
       - httpApi: "*"
 
