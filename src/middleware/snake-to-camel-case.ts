@@ -13,7 +13,7 @@ export function snakeToCamelCase(
 	next()
 }
 
-function convertKeysToCamelCase(obj: ObjectOrArray): ObjectOrArray {
+export function convertKeysToCamelCase(obj: ObjectOrArray): ObjectOrArray {
 	if (typeof obj !== `object` || obj === null) {
 		return obj
 	}

@@ -7,6 +7,8 @@ const gameRatingSchema = z.object({
 	percent: z.number(),
 })
 
+export type GameRating = z.infer<typeof gameRatingSchema>
+
 const addedByStatusSchema = z.object({
 	yet: z.number(),
 	owned: z.number(),
@@ -16,11 +18,15 @@ const addedByStatusSchema = z.object({
 	playing: z.number(),
 })
 
+export type AddedByStatus = z.infer<typeof addedByStatusSchema>
+
 const esrbRatingSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	slug: z.string(),
 })
+
+export type EsrbRating = z.infer<typeof esrbRatingSchema>
 
 const requirementsEn = z.object({
 	minimum: z.string(),
@@ -41,6 +47,8 @@ const platformSchema = z.object({
 	requirementsRu: z.nullable(z.string()),
 })
 
+export type Platform = z.infer<typeof platformSchema>
+
 export const createGameSchema = z.object({
 	slug: z.string(),
 	name: z.string(),
@@ -59,6 +67,7 @@ export const createGameSchema = z.object({
 	suggestionsCount: z.number(),
 	esrbRating: esrbRatingSchema,
 	platforms: z.array(platformSchema),
+	sourceId: z.number().optional(),
 })
 
 export type CreateGame = z.infer<typeof createGameSchema>
@@ -68,7 +77,6 @@ export const gameSchema = createGameSchema.extend({
 	entityType: z.string(),
 	createdAt: z.number(),
 	updatedAt: z.number(),
-	sourceId: z.number(),
 })
 
 export type Game = z.infer<typeof gameSchema>

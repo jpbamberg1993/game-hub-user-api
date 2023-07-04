@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { BatchWriteItemCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import {
 	marshall,
 	QueryCommand,
@@ -21,6 +21,7 @@ export type RepositoryResponse<T> = {
 export type GamesRepository = {
 	list: () => Promise<RepositoryResponse<Game[]>>
 	create: (game: CreateGame) => Promise<RepositoryResponse<Game>>
+	batchCreate: (games: CreateGame[]) => Promise<RepositoryResponse<Game[]>>
 }
 
 type Props = {
@@ -31,6 +32,7 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 	return Object.freeze({
 		list,
 		create,
+		batchCreate,
 	})
 
 	async function list(): Promise<RepositoryResponse<Game[]>> {
@@ -101,6 +103,51 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 				error: {
 					statusCode: 500,
 					message: `Could not create game`,
+				},
+			}
+		}
+	}
+
+	async function batchCreate(
+		games: CreateGame[]
+	): Promise<RepositoryResponse<Game[]>> {
+		const timestamp = new Date().getTime()
+
+		const params = {
+			RequestItems: {
+				[process.env.DYNAMODB_TABLE ?? ``]: games.map((game) => {
+					return {
+						PutRequest: {
+							Item: marshall(
+								{
+									id: uuid(),
+									entityType: `Game`,
+									createdAt: timestamp,
+									updatedAt: timestamp,
+									...game,
+								},
+								{ removeUndefinedValues: true }
+							),
+						},
+					}
+				}),
+			},
+		}
+
+		try {
+			await ddbDocClient.send(new BatchWriteItemCommand(params))
+
+			return {
+				data: params.RequestItems[process.env.DYNAMODB_TABLE ?? ``].map(
+					(item) => unmarshall(item.PutRequest?.Item ?? {}) as Game
+				),
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				error: {
+					statusCode: 500,
+					message: `Could not create games`,
 				},
 			}
 		}
