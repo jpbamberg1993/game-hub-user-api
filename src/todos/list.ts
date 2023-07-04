@@ -30,7 +30,7 @@ export async function list(req: Request, res: Response) {
 		)
 		res.json(items)
 	} catch (error) {
-		console.log(error)
+		console.error(error)
 		res.status(500).json({ error: `Could not retrieve todos` })
 	}
 }

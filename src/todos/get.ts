@@ -34,7 +34,7 @@ export async function get(req: Request, res: Response) {
 		}
 		res.json(unmarshall({ ...Items[0] }))
 	} catch (error) {
-		console.log(error)
+		console.error(error)
 		res
 			.status(500)
 			.json({ error: `Error occurred when querying for todo with id: ${id}` })
