@@ -7,8 +7,6 @@ const gameRatingSchema = z.object({
 	percent: z.number(),
 })
 
-export type GameRating = z.infer<typeof gameRatingSchema>
-
 const addedByStatusSchema = z.object({
 	yet: z.number(),
 	owned: z.number(),
@@ -18,15 +16,19 @@ const addedByStatusSchema = z.object({
 	playing: z.number(),
 })
 
-export type AddedByStatus = z.infer<typeof addedByStatusSchema>
+export const OEsrbRatingName = {
+	Everyone: `Everyone`,
+	Teen: `Teen`,
+	EveryOne10Plus: `Everyone 10+`,
+	Mature: `Mature`,
+	AdultsOnly: `Adults Only`,
+} as const
 
 const esrbRatingSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	slug: z.string(),
 })
-
-export type EsrbRating = z.infer<typeof esrbRatingSchema>
 
 const requirementsEn = z.object({
 	minimum: z.string(),
@@ -46,8 +48,6 @@ const platformSchema = z.object({
 	requirementsEn: z.nullable(requirementsEn),
 	requirementsRu: z.nullable(z.string()),
 })
-
-export type Platform = z.infer<typeof platformSchema>
 
 export const createGameSchema = z.object({
 	slug: z.string(),
@@ -70,8 +70,6 @@ export const createGameSchema = z.object({
 	sourceId: z.number().optional(),
 })
 
-export type CreateGame = z.infer<typeof createGameSchema>
-
 export const gameSchema = createGameSchema.extend({
 	id: z.number(),
 	entityType: z.string(),
@@ -79,4 +77,12 @@ export const gameSchema = createGameSchema.extend({
 	updatedAt: z.number(),
 })
 
+export type Platform = z.infer<typeof platformSchema>
+export type GameRating = z.infer<typeof gameRatingSchema>
+export type AddedByStatus = z.infer<typeof addedByStatusSchema>
+export type EsrbRating = z.infer<typeof esrbRatingSchema>
+export type CreateGame = z.infer<typeof createGameSchema>
 export type Game = z.infer<typeof gameSchema>
+export type EsrbRatingName =
+	(typeof OEsrbRatingName)[keyof typeof OEsrbRatingName]
+export type RequirementsEn = z.infer<typeof requirementsEn>

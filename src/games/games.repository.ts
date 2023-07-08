@@ -18,39 +18,27 @@ export type RepositoryResponse<T> = {
 	error?: DataError
 }
 
-export type GamesRepository = {
-	list: () => Promise<RepositoryResponse<Game[]>>
-	create: (game: CreateGame) => Promise<RepositoryResponse<Game>>
-	batchCreate: (games: CreateGame[]) => Promise<RepositoryResponse<Game[]>>
-}
+export class GamesRepository {
+	constructor(private readonly ddbDocClient: DynamoDBClient) {}
 
-type Props = {
-	ddbDocClient: DynamoDBClient
-}
-
-export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
-	return Object.freeze({
-		list,
-		create,
-		batchCreate,
-	})
-
-	async function list(): Promise<RepositoryResponse<Game[]>> {
+	async list(): Promise<RepositoryResponse<Game[]>> {
 		const params = {
 			TableName: process.env.DYNAMODB_TABLE,
-			KeyConditionExpression: `#entityType = :entityType`,
+			KeyConditionExpression: `#entityType = :entityType and #rating = :rating`,
 			ExpressionAttributeNames: {
 				'#entityType': `entityType`,
+				'#rating': `rating`,
 			},
 			ExpressionAttributeValues: marshall({
 				':entityType': `Game`,
+				':rating': 3.48,
 			}),
 		}
 
 		const command = new QueryCommand(params)
 
 		try {
-			const { Items } = await ddbDocClient.send(command)
+			const { Items } = await this.ddbDocClient.send(command)
 			if (!Items) {
 				return {
 					error: {
@@ -74,7 +62,7 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 		}
 	}
 
-	async function create(game: CreateGame): Promise<RepositoryResponse<Game>> {
+	async create(game: CreateGame): Promise<RepositoryResponse<Game>> {
 		const timestamp = new Date().getTime()
 
 		const params = {
@@ -93,7 +81,7 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 		}
 
 		try {
-			await ddbDocClient.send(new PutItemCommand(params))
+			await this.ddbDocClient.send(new PutItemCommand(params))
 			return {
 				data: unmarshall(params.Item) as Game,
 			}
@@ -108,9 +96,7 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 		}
 	}
 
-	async function batchCreate(
-		games: CreateGame[]
-	): Promise<RepositoryResponse<Game[]>> {
+	async batchCreate(games: CreateGame[]): Promise<RepositoryResponse<Game[]>> {
 		const timestamp = new Date().getTime()
 
 		const params = {
@@ -135,7 +121,7 @@ export function makeGamesRepository({ ddbDocClient }: Props): GamesRepository {
 		}
 
 		try {
-			await ddbDocClient.send(new BatchWriteItemCommand(params))
+			await this.ddbDocClient.send(new BatchWriteItemCommand(params))
 
 			return {
 				data: params.RequestItems[process.env.DYNAMODB_TABLE ?? ``].map(
