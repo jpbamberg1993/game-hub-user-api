@@ -12,7 +12,7 @@ export function makeList({ gamesRepository }: Props): ListGames {
 	return async function list(): Promise<HttpResponse> {
 		const { data, error } = await gamesRepository.list()
 
-		if (error || !data) {
+		if (error || !data || data.length === 0) {
 			return {
 				headers: {
 					'Content-Type': `application/json`,
