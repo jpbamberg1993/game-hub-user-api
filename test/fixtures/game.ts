@@ -54,7 +54,7 @@ const createPlatform = (): Platform => ({
 	requirementsRu: faker.lorem.sentence(),
 })
 
-export const createFakeGame = (): Game => {
+export const createFakeGame = (overrides: Partial<Game> = {}): Game => {
 	const game = {
 		slug: faker.lorem.slug(),
 		name: faker.lorem.words({ min: 1, max: 3 }),
@@ -84,6 +84,7 @@ export const createFakeGame = (): Game => {
 		entityType: faker.random.word(),
 		createdAt: Date.now(),
 		updatedAt: Date.now(),
+		...overrides,
 	}
 
 	return game
