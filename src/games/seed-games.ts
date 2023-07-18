@@ -11,7 +11,7 @@ import {
 	Platform,
 } from './game.schema'
 
-type RawgGame = {
+export type RawgGame = {
 	id: number
 	name: string
 	slug: string
@@ -103,7 +103,7 @@ export function makeSeedGames(
 			suggestionsCount,
 			esrbRating,
 			platforms,
-		} = convertKeysToCamelCase(rawgGame) as Game
+		} = convertKeysToCamelCase(rawgGame) as RawgGame
 
 		return {
 			sourceId: id,

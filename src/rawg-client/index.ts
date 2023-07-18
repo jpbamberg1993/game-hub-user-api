@@ -1,5 +1,5 @@
 import https from 'https'
-import { Game } from '../games/game.schema'
+import { RawgGame } from '../games/seed-games'
 
 export type GameQuery = {
 	genre?: string
@@ -8,7 +8,7 @@ export type GameQuery = {
 }
 
 export type RawgClient = {
-	getGames: (query: GameQuery) => Promise<Game[]>
+	getGames: (query: GameQuery) => Promise<RawgGame[]>
 }
 
 export function makeRawgClient(): RawgClient {
@@ -16,7 +16,7 @@ export function makeRawgClient(): RawgClient {
 		getGames,
 	})
 
-	async function getGames(query: GameQuery): Promise<Game[]> {
+	async function getGames(query: GameQuery): Promise<RawgGame[]> {
 		const parameters = new URLSearchParams()
 		parameters.set(`key`, process.env.RAWG_API_KEY ?? ``)
 		if (query.genre) {
@@ -48,7 +48,7 @@ export function makeRawgClient(): RawgClient {
 				)
 				.on(`error`, (err) => {
 					console.error(err)
-					resolve([] as Game[])
+					resolve([] as RawgGame[])
 				})
 		})
 	}
