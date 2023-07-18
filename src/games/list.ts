@@ -1,16 +1,21 @@
 import { HttpResponse } from '../express-callback'
 import { GamesRepository } from './games.repository'
 import { getErrorMessage } from '../utils/get-error-message'
+import { HttpRequest } from '../express-callback/index'
 
-export type ListGames = () => Promise<HttpResponse>
+export type ListGames = (httpRequest: HttpRequest) => Promise<HttpResponse>
 
 type Props = {
 	gamesRepository: GamesRepository
 }
 
 export function makeList({ gamesRepository }: Props): ListGames {
-	return async function list(): Promise<HttpResponse> {
-		const { data, error } = await gamesRepository.list()
+	return async function list(httpRequest: HttpRequest): Promise<HttpResponse> {
+		const { lastEvaluatedKey } = httpRequest.query
+
+		const { lastKeyId, data, error } = await gamesRepository.list(
+			lastEvaluatedKey
+		)
 
 		if (error || !data || data.length === 0) {
 			return {
@@ -31,7 +36,7 @@ export function makeList({ gamesRepository }: Props): ListGames {
 				'Content-Type': `application/json`,
 			},
 			statusCode: 200,
-			body: { results: sortedGames },
+			body: { lastKeyId, results: sortedGames },
 		}
 	}
 }

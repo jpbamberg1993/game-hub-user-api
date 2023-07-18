@@ -1,5 +1,9 @@
 import { v4 as uuid } from 'uuid'
-import { BatchWriteItemCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import {
+	BatchWriteItemCommand,
+	DynamoDBClient,
+	QueryCommandInput,
+} from '@aws-sdk/client-dynamodb'
 import {
 	marshall,
 	QueryCommand,
@@ -14,6 +18,7 @@ export type DataError = {
 }
 
 export type RepositoryResponse<T> = {
+	lastKeyId?: Record<string, unknown> | null
 	data?: T
 	error?: DataError
 }
@@ -21,25 +26,31 @@ export type RepositoryResponse<T> = {
 export class GamesRepository {
 	constructor(private readonly ddbDocClient: DynamoDBClient) {}
 
-	async list(): Promise<RepositoryResponse<Game[]>> {
-		const params = {
+	async list(lastEvaluatedKey: string): Promise<RepositoryResponse<Game[]>> {
+		const params: QueryCommandInput = {
 			TableName: process.env.DYNAMODB_TABLE,
-			KeyConditionExpression: `#entityType = :entityType and #rating = :rating`,
+			KeyConditionExpression: `#entityType = :entityType`,
 			ExpressionAttributeNames: {
 				'#entityType': `entityType`,
-				'#rating': `rating`,
 			},
 			ExpressionAttributeValues: marshall({
 				':entityType': `Game`,
-				':rating': 3.48,
 			}),
+			Limit: 10,
+		}
+
+		if (lastEvaluatedKey) {
+			params.ExclusiveStartKey = marshall({
+				entityType: `Game`,
+				id: lastEvaluatedKey,
+			})
 		}
 
 		const command = new QueryCommand(params)
 
 		try {
-			const { Items } = await this.ddbDocClient.send(command)
-			if (!Items) {
+			const result = await this.ddbDocClient.send(command)
+			if (!result.Items) {
 				return {
 					error: {
 						statusCode: 404,
@@ -47,8 +58,12 @@ export class GamesRepository {
 					},
 				}
 			}
-			const games = Items.map((item) => unmarshall(item)) as Game[]
+			const games = result.Items.map((item) => unmarshall(item)) as Game[]
+			const lastKey = result?.LastEvaluatedKey
+				? unmarshall(result.LastEvaluatedKey)
+				: null
 			return {
+				lastKeyId: lastKey?.id ?? null,
 				data: games,
 			}
 		} catch (error) {
