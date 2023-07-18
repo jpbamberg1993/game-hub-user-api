@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { v4 as uuid } from 'uuid'
 import {
 	Game,
 	OEsrbRatingName,
@@ -11,10 +12,10 @@ import {
 
 function createGameRating(): GameRating {
 	return {
-		id: faker.datatype.number(),
+		id: faker.number.int(),
 		title: faker.lorem.words(),
-		count: faker.datatype.number(),
-		percent: faker.datatype.float({ min: 0, max: 100 }),
+		count: faker.number.int(),
+		percent: faker.number.float({ min: 0, max: 100 }),
 	}
 }
 
@@ -48,14 +49,14 @@ function createRequirementsEn(): RequirementsEn {
 
 function createPlatform(): Platform {
 	return {
-		id: faker.datatype.number(),
+		id: faker.number.int({ min: 0, max: 1_000 }),
 		name: faker.system.commonFileName(),
 		slug: faker.lorem.slug(),
-		image: faker.image.imageUrl(),
+		image: faker.image.urlLoremFlickr(),
 		yearEnd: faker.date.past().getFullYear(),
 		yearStart: faker.date.past().getFullYear(),
-		gamesCount: faker.datatype.number(),
-		imageBackground: faker.image.imageUrl(),
+		gamesCount: faker.number.int({ min: 0, max: 1_000 }),
+		imageBackground: faker.image.urlLoremFlickr(),
 		releasedAt: faker.date.past().toISOString(),
 		requirementsEn: createRequirementsEn(),
 		requirementsRu: faker.lorem.sentence(),
@@ -63,33 +64,35 @@ function createPlatform(): Platform {
 }
 
 export function createFakeGame(overrides: Partial<Game> = {}): Game {
+	const gameId = uuid()
+
 	const game = {
 		slug: faker.lorem.slug(),
 		name: faker.lorem.words({ min: 1, max: 3 }),
 		released: faker.date.past().toISOString(),
 		tba: faker.datatype.boolean(),
-		backgroundImage: faker.image.imageUrl(),
-		rating: faker.datatype.float({ min: 0, max: 5 }),
-		ratingTop: faker.datatype.number({ min: 0, max: 5 }),
+		backgroundImage: faker.image.urlLoremFlickr(),
+		rating: faker.number.float({ min: 0, max: 5 }),
+		ratingTop: faker.number.int({ min: 0, max: 5 }),
 		ratings: Array.from(
-			{ length: faker.datatype.number({ min: 1, max: 10 }) },
+			{ length: faker.number.int({ min: 1, max: 10 }) },
 			createGameRating
 		),
-		ratingsCount: faker.datatype.number({ min: 0, max: 1000 }),
-		reviewsTextCount: faker.datatype.number({ min: 0, max: 1000 }),
-		added: faker.datatype.number(),
+		ratingsCount: faker.number.int({ min: 0, max: 1000 }),
+		reviewsTextCount: faker.number.int({ min: 0, max: 1000 }),
+		added: faker.number.int({ min: 0, max: 1000 }),
 		addedByStatus: createAddedByStatus(),
-		metacritic: faker.datatype.number({ min: 0, max: 100 }),
-		playtime: faker.datatype.number({ min: 0, max: 100 }),
-		suggestionsCount: faker.datatype.number({ min: 0, max: 100 }),
+		metacritic: faker.number.int({ min: 0, max: 100 }),
+		playtime: faker.number.int({ min: 0, max: 300 }),
+		suggestionsCount: faker.number.int({ min: 0, max: 100 }),
 		esrbRating: createEsrbRating(),
 		platforms: Array.from(
-			{ length: faker.datatype.number({ min: 1, max: 5 }) },
+			{ length: faker.number.int({ min: 1, max: 5 }) },
 			createPlatform
 		),
-		sourceId: faker.datatype.number(),
-		id: faker.datatype.number(),
-		entityType: faker.random.word(),
+		sourceId: faker.number.int(),
+		id: gameId,
+		entityType: `Game`,
 		createdAt: Date.now(),
 		updatedAt: Date.now(),
 		...overrides,

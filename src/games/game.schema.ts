@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { v4 as uuid } from 'uuid'
 
 const gameRatingSchema = z.object({
 	id: z.number(),
@@ -71,7 +72,7 @@ export const createGameSchema = z.object({
 })
 
 export const gameSchema = createGameSchema.extend({
-	id: z.number(),
+	id: z.string().uuid(),
 	entityType: z.string(),
 	createdAt: z.number(),
 	updatedAt: z.number(),
