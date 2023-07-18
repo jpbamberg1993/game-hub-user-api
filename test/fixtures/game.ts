@@ -9,23 +9,27 @@ import {
 	RequirementsEn,
 } from '../../src/games/game.schema'
 
-const createGameRating = (): GameRating => ({
-	id: faker.datatype.number(),
-	title: faker.lorem.words(),
-	count: faker.datatype.number(),
-	percent: faker.datatype.float({ min: 0, max: 100 }),
-})
+function createGameRating(): GameRating {
+	return {
+		id: faker.datatype.number(),
+		title: faker.lorem.words(),
+		count: faker.datatype.number(),
+		percent: faker.datatype.float({ min: 0, max: 100 }),
+	}
+}
 
-const createAddedByStatus = (): AddedByStatus => ({
-	yet: faker.number.int({ min: 0, max: 1_000 }),
-	owned: faker.number.int({ min: 0, max: 1_000 }),
-	beaten: faker.number.int({ min: 0, max: 1_000 }),
-	toplay: faker.number.int({ min: 0, max: 1_000 }),
-	dropped: faker.number.int({ min: 0, max: 1_000 }),
-	playing: faker.number.int({ min: 0, max: 1_000 }),
-})
+function createAddedByStatus(): AddedByStatus {
+	return {
+		yet: faker.number.int({ min: 0, max: 1_000 }),
+		owned: faker.number.int({ min: 0, max: 1_000 }),
+		beaten: faker.number.int({ min: 0, max: 1_000 }),
+		toplay: faker.number.int({ min: 0, max: 1_000 }),
+		dropped: faker.number.int({ min: 0, max: 1_000 }),
+		playing: faker.number.int({ min: 0, max: 1_000 }),
+	}
+}
 
-const createEsrbRating = (): EsrbRating => {
+function createEsrbRating(): EsrbRating {
 	const name = faker.helpers.objectValue(OEsrbRatingName)
 	const slug = name.toLowerCase().replace(/\s/g, `-`).replace(`+`, `-plus`)
 	return {
@@ -35,26 +39,30 @@ const createEsrbRating = (): EsrbRating => {
 	}
 }
 
-const createRequirementsEn = (): RequirementsEn => ({
-	minimum: faker.lorem.sentence(),
-	recommended: faker.lorem.sentence(),
-})
+function createRequirementsEn(): RequirementsEn {
+	return {
+		minimum: faker.lorem.sentence(),
+		recommended: faker.lorem.sentence(),
+	}
+}
 
-const createPlatform = (): Platform => ({
-	id: faker.datatype.number(),
-	name: faker.system.commonFileName(),
-	slug: faker.lorem.slug(),
-	image: faker.image.imageUrl(),
-	yearEnd: faker.date.past().getFullYear(),
-	yearStart: faker.date.past().getFullYear(),
-	gamesCount: faker.datatype.number(),
-	imageBackground: faker.image.imageUrl(),
-	releasedAt: faker.date.past().toISOString(),
-	requirementsEn: createRequirementsEn(),
-	requirementsRu: faker.lorem.sentence(),
-})
+function createPlatform(): Platform {
+	return {
+		id: faker.datatype.number(),
+		name: faker.system.commonFileName(),
+		slug: faker.lorem.slug(),
+		image: faker.image.imageUrl(),
+		yearEnd: faker.date.past().getFullYear(),
+		yearStart: faker.date.past().getFullYear(),
+		gamesCount: faker.datatype.number(),
+		imageBackground: faker.image.imageUrl(),
+		releasedAt: faker.date.past().toISOString(),
+		requirementsEn: createRequirementsEn(),
+		requirementsRu: faker.lorem.sentence(),
+	}
+}
 
-export const createFakeGame = (overrides: Partial<Game> = {}): Game => {
+export function createFakeGame(overrides: Partial<Game> = {}): Game {
 	const game = {
 		slug: faker.lorem.slug(),
 		name: faker.lorem.words({ min: 1, max: 3 }),
