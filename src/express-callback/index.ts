@@ -29,7 +29,7 @@ export type HttpResponse = {
 type Controller = (httpRequest: HttpRequest) => Promise<HttpResponse>
 
 export function makeExpressCallback(controller: Controller) {
-	return (req: Request, res: Response) => {
+	return async (req: Request, res: Response) => {
 		const httpRequest: HttpRequest = {
 			body: req.body,
 			query: req.query,
@@ -43,16 +43,16 @@ export function makeExpressCallback(controller: Controller) {
 				'User-Agent': req.get(`User-Agent`),
 			},
 		}
-		controller(httpRequest)
-			.then((httpResponse: HttpResponse) => {
-				if (httpResponse.headers) {
-					res.set(httpResponse.headers)
-				}
-				res.type(`json`)
-				res.status(httpResponse.statusCode).send(httpResponse.body)
-			})
-			.catch((e) =>
-				res.status(500).send({ error: `An unknown error occurred.` })
-			)
+		console.log({ controller })
+		try {
+			const httpResponse = await controller(httpRequest)
+			if (httpResponse.headers) {
+				res.set(httpResponse.headers)
+			}
+			res.type(`json`)
+			res.status(httpResponse.statusCode).send(httpResponse.body)
+		} catch (error) {
+			res.status(500).send({ error: `An unknown error occurred.` })
+		}
 	}
 }

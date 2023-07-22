@@ -4,7 +4,6 @@ import { RawgClient, GameQuery } from '../rawg-client'
 import { convertKeysToCamelCase } from '../middleware/snake-to-camel-case'
 import {
 	CreateGame,
-	Game,
 	GameRating,
 	AddedByStatus,
 	EsrbRating,
@@ -39,16 +38,14 @@ export function makeSeedGames(
 	return async function seedGames(httpRequest: HttpRequest) {
 		const { genre, platform } = httpRequest.query
 
-		const tasks: Promise<void>[] = []
-		for (let i = 1; i <= 20; i++) {
-			const task = fetchAndCreateGames({
-				genre,
-				platform,
-				page: i,
-			})
-			tasks.push(task)
+		// Last page was 519, so if I want more data I start at 520
+		for (let i = 520; i <= 1000; i += 10) {
+			const tasks: Promise<void>[] = []
+			for (let j = i; j <= i + 10; j++) {
+				tasks.push(fetchAndCreateGames({ genre, platform, page: j }))
+			}
+			await Promise.all(tasks)
 		}
-		await Promise.all(tasks)
 
 		return {
 			headers: {

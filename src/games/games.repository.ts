@@ -36,7 +36,7 @@ export class GamesRepository {
 			ExpressionAttributeValues: marshall({
 				':entityType': `Game`,
 			}),
-			Limit: 10,
+			Limit: 20,
 		}
 
 		if (lastEvaluatedKey) {
