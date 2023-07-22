@@ -58,7 +58,6 @@ export function makeSeedGames(
 	async function fetchAndCreateGames(gamesQuery: GameQuery) {
 		const data = await fetchGames(gamesQuery)
 		await createGames(data)
-		console.log(`--> Fetched and created games for page ${gamesQuery.page}`)
 	}
 
 	async function fetchGames(gamesQuery: GameQuery) {

@@ -47,7 +47,7 @@ functions:
   api:
     handler: src/index.handler
     environment: ${file(env.${sls:stage, self:provider.stage}.json)}
-    timeout: 10
+    timeout: 30
     events:
       - httpApi: "*"
 
