@@ -1,7 +1,7 @@
 import { HttpResponse } from '../express-callback'
 import { GamesRepository } from './games.repository'
 import { getErrorMessage } from '../utils/get-error-message'
-import { HttpRequest } from '../express-callback/index'
+import { HttpRequest } from '../express-callback'
 
 export type ListGames = (httpRequest: HttpRequest) => Promise<HttpResponse>
 
