@@ -19,44 +19,44 @@ describe(`list`, () => {
 		})
 	})
 
-	it(`invokes the GamesRespository list method with the lastEvaluatedKey`, async () => {
-		const mockedGamesRespository: GamesRepository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve({
+	it(`invokes the GamesRepository list method with the lastEvaluatedKey`, async () => {
+		const mockedGamesRepository: GamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve({
 			data: [],
 		})
 
-		verify(mockedGamesRespository.list(lastEvaluatedKey)).never()
+		verify(mockedGamesRepository.list(lastEvaluatedKey)).never()
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		await list(mockedHttpRequest)
 
-		verify(mockedGamesRespository.list(lastEvaluatedKey)).once()
-		verify(mockedGamesRespository.list(``)).never()
+		verify(mockedGamesRepository.list(lastEvaluatedKey)).once()
+		verify(mockedGamesRepository.list(``)).never()
 	})
 
 	it(`invokes the GamesRepository.list() method`, async () => {
 		const listOfGames: RepositoryResponse<Game[]> = {
 			data: [],
 		}
-		const mockedGamesRespository: GamesRepository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(listOfGames)
+		const mockedGamesRepository: GamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(listOfGames)
 
-		verify(mockedGamesRespository.list(lastEvaluatedKey)).never()
+		verify(mockedGamesRepository.list(lastEvaluatedKey)).never()
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		await list(mockedHttpRequest)
 
-		verify(mockedGamesRespository.list(lastEvaluatedKey)).once()
+		verify(mockedGamesRepository.list(lastEvaluatedKey)).once()
 	})
 
 	it(`returns 200`, async () => {
 		const listOfGames: RepositoryResponse<Game[]> = {
 			data: Array.from({ length: 1 }, createFakeGame),
 		}
-		const mockedGamesRespository: GamesRepository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(listOfGames)
+		const mockedGamesRepository: GamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(listOfGames)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.statusCode).toBe(200)
@@ -66,10 +66,10 @@ describe(`list`, () => {
 		const listOfGames: RepositoryResponse<Game[]> = {
 			data: Array.from({ length: 2 }, createFakeGame),
 		}
-		const mockedGamesRespository: GamesRepository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(listOfGames)
+		const mockedGamesRepository: GamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(listOfGames)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.body.results).toEqual(listOfGames.data)
@@ -82,12 +82,12 @@ describe(`list`, () => {
 				statusCode: 404,
 			},
 		}
-		const mockedGamesRespository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(
+		const mockedGamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(
 			repositoryResponse
 		)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.statusCode).toBe(404)
@@ -97,12 +97,12 @@ describe(`list`, () => {
 		const repositoryResponse: RepositoryResponse<Game[]> = {
 			data: [],
 		}
-		const mockedGamesRespository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(
+		const mockedGamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(
 			repositoryResponse
 		)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.statusCode).toBe(404)
@@ -115,12 +115,12 @@ describe(`list`, () => {
 				statusCode: 500,
 			},
 		}
-		const mockedGamesRespository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(
+		const mockedGamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(
 			repositoryResponse
 		)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.statusCode).toBe(500)
@@ -142,12 +142,12 @@ describe(`list`, () => {
 		const repositoryResponse: RepositoryResponse<Game[]> = {
 			data: [game1, game2, game3, game4],
 		}
-		const mockedGamesRespository = mock(GamesRepository)
-		when(mockedGamesRespository.list(lastEvaluatedKey)).thenResolve(
+		const mockedGamesRepository = mock(GamesRepository)
+		when(mockedGamesRepository.list(lastEvaluatedKey)).thenResolve(
 			repositoryResponse
 		)
 
-		const list = makeList({ gamesRepository: instance(mockedGamesRespository) })
+		const list = makeList({ gamesRepository: instance(mockedGamesRepository) })
 		const response = await list(mockedHttpRequest)
 
 		expect(response.body.results).toEqual([game4, game3, game2, game1])
