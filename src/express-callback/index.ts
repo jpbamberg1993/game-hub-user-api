@@ -43,7 +43,7 @@ export function makeExpressCallback(controller: Controller) {
 				'User-Agent': req.get(`User-Agent`),
 			},
 		}
-		console.log({ controller })
+
 		try {
 			const httpResponse = await controller(httpRequest)
 			if (httpResponse.headers) {
