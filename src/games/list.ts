@@ -36,7 +36,7 @@ export function makeList({ gamesRepository }: Props): ListGames {
 				'Content-Type': `application/json`,
 			},
 			statusCode: 200,
-			body: { lastKeyId, results: sortedGames },
+			body: { count: sortedGames.length, lastKeyId, results: sortedGames },
 		}
 	}
 }
