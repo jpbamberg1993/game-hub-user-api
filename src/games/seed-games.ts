@@ -1,14 +1,15 @@
 import { HttpRequest } from '../express-callback'
 import { GamesRepository } from './games.repository'
-import { RawgClient, GameQuery } from '../rawg-client'
+import { GameQuery, RawgClient } from '../rawg-client'
 import { convertKeysToCamelCase } from '../middleware/snake-to-camel-case'
 import {
-	CreateGame,
-	GameRating,
 	AddedByStatus,
+	CreateGame,
 	EsrbRating,
+	GameRating,
 	Platform,
 } from './game.schema'
+import { Genre } from '../genres/genre.schema'
 
 export type RawgGame = {
 	id: number
@@ -29,6 +30,7 @@ export type RawgGame = {
 	suggestionsCount: number
 	esrbRating: EsrbRating
 	platforms: Platform[]
+	genres: Genre[]
 }
 
 export function makeSeedGames(
@@ -98,6 +100,7 @@ export function makeSeedGames(
 			suggestionsCount,
 			esrbRating,
 			platforms,
+			genres,
 		} = convertKeysToCamelCase(rawgGame) as RawgGame
 
 		return {
@@ -118,6 +121,7 @@ export function makeSeedGames(
 			playtime,
 			suggestionsCount,
 			esrbRating,
+			genres,
 			platforms,
 		}
 	}

@@ -121,11 +121,11 @@ export class GamesRepository {
 						PutRequest: {
 							Item: marshall(
 								{
+									...game,
 									id: uuid(),
 									entityType: `Game`,
 									createdAt: timestamp,
 									updatedAt: timestamp,
-									...game,
 								},
 								{ removeUndefinedValues: true }
 							),
