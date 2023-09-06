@@ -11,20 +11,33 @@ type Props = {
 
 export function makeList({ gamesRepository }: Props): ListGames {
 	return async function list(httpRequest: HttpRequest): Promise<HttpResponse> {
-		const { lastEvaluatedKey } = httpRequest.query
+		const { lastEvaluatedKey, genres } = httpRequest.query
 
-		const { lastKeyId, data, error } = await gamesRepository.list(
-			lastEvaluatedKey
+		const { lastKeyId, data, error } = await fetchGames(
+			lastEvaluatedKey as string,
+			genres as string
 		)
 
-		if (error || !data || data.length === 0) {
+		if (error) {
 			return {
 				headers: {
-					'Content-Type': `application/json`,
+					'Content-Type': `string`,
 				},
 				statusCode: error?.statusCode ?? 404,
 				body: {
 					error: getErrorMessage(error),
+				},
+			}
+		}
+
+		if (!data || data.length === 0) {
+			return {
+				headers: {
+					'Content-Type': `string`,
+				},
+				statusCode: 204,
+				body: {
+					error: `No games found`,
 				},
 			}
 		}
@@ -37,6 +50,15 @@ export function makeList({ gamesRepository }: Props): ListGames {
 			},
 			statusCode: 200,
 			body: { count: sortedGames.length, lastKeyId, results: sortedGames },
+		}
+	}
+
+	async function fetchGames(lastEvaluatedKey: string, genres: string) {
+		if (genres) {
+			const genreHash = `Genre#${genres}`
+			return await gamesRepository.listByGsi(lastEvaluatedKey, genreHash)
+		} else {
+			return await gamesRepository.list(lastEvaluatedKey)
 		}
 	}
 }

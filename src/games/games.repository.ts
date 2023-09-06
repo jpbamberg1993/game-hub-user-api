@@ -46,35 +46,33 @@ export class GamesRepository {
 			})
 		}
 
-		const command = new QueryCommand(params)
+		return this.runQuery(params)
+	}
 
-		try {
-			const result = await this.ddbDocClient.send(command)
-			if (!result.Items) {
-				return {
-					error: {
-						statusCode: 404,
-						message: `Could not find games`,
-					},
-				}
-			}
-			const games = result.Items.map((item) => unmarshall(item)) as Game[]
-			const lastKey = result?.LastEvaluatedKey
-				? unmarshall(result.LastEvaluatedKey)
-				: null
-			return {
-				lastKeyId: lastKey?.id ?? null,
-				data: games,
-			}
-		} catch (error) {
-			console.error(error)
-			return {
-				error: {
-					statusCode: 500,
-					message: `Could not retrieve games`,
-				},
-			}
+	async listByGsi(
+		lastEvaluatedKey: string,
+		gsiHash: string
+	): Promise<RepositoryResponse<Game[]>> {
+		const params: QueryCommandInput = {
+			TableName: process.env.DYNAMODB_TABLE,
+			IndexName: `gsiOneIndex`,
+			KeyConditionExpression: `#gsi = :gsiHash`,
+			ExpressionAttributeNames: {
+				'#gsi': `gsiOnePk`,
+			},
+			ExpressionAttributeValues: marshall({
+				':gsiHash': gsiHash,
+			}),
+			Limit: 20,
 		}
+
+		if (lastEvaluatedKey) {
+			params.ExclusiveStartKey = marshall({
+				id: lastEvaluatedKey,
+			})
+		}
+
+		return this.runQuery(params)
 	}
 
 	async create(game: CreateGame): Promise<RepositoryResponse<Game>> {
@@ -149,6 +147,40 @@ export class GamesRepository {
 				error: {
 					statusCode: 500,
 					message: `Could not create games`,
+				},
+			}
+		}
+	}
+
+	private async runQuery(
+		params: QueryCommandInput
+	): Promise<RepositoryResponse<Game[]>> {
+		const command = new QueryCommand(params)
+
+		try {
+			const result = await this.ddbDocClient.send(command)
+			if (!result.Items) {
+				return {
+					error: {
+						statusCode: 404,
+						message: `Could not find games`,
+					},
+				}
+			}
+			const games = result.Items.map((item) => unmarshall(item)) as Game[]
+			const lastKey = result?.LastEvaluatedKey
+				? unmarshall(result.LastEvaluatedKey)
+				: null
+			return {
+				lastKeyId: lastKey?.id ?? null,
+				data: games,
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				error: {
+					statusCode: 500,
+					message: `Could not retrieve games`,
 				},
 			}
 		}
