@@ -69,6 +69,8 @@ export class GamesRepository {
 		if (lastEvaluatedKey) {
 			params.ExclusiveStartKey = marshall({
 				id: lastEvaluatedKey,
+				entityType: `Game`,
+				gsiOnePk: gsiHash,
 			})
 		}
 
