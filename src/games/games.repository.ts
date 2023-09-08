@@ -24,6 +24,8 @@ export type RepositoryResponse<T> = {
 }
 
 export class GamesRepository {
+	private static listFields = `id, sourceId, slug, #n, descriptionRaw, backgroundImage, platforms, metacritic, genres, ratingTop, publishers`
+
 	constructor(private readonly ddbDocClient: DynamoDBClient) {}
 
 	async list(lastEvaluatedKey: string): Promise<RepositoryResponse<Game[]>> {
@@ -32,10 +34,12 @@ export class GamesRepository {
 			KeyConditionExpression: `#entityType = :entityType`,
 			ExpressionAttributeNames: {
 				'#entityType': `entityType`,
+				'#n': `name`,
 			},
 			ExpressionAttributeValues: marshall({
 				':entityType': `Game`,
 			}),
+			ProjectionExpression: GamesRepository.listFields,
 			Limit: 20,
 		}
 
@@ -59,10 +63,12 @@ export class GamesRepository {
 			KeyConditionExpression: `#gsi = :gsiHash`,
 			ExpressionAttributeNames: {
 				'#gsi': `gsiOnePk`,
+				'#n': `name`,
 			},
 			ExpressionAttributeValues: marshall({
 				':gsiHash': gsiHash,
 			}),
+			ProjectionExpression: GamesRepository.listFields,
 			Limit: 20,
 		}
 
