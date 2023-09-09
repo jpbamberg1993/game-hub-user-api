@@ -83,6 +83,45 @@ export class GamesRepository {
 		return this.runQuery(params)
 	}
 
+	async getById(id: string): Promise<RepositoryResponse<Game>> {
+		const params = {
+			TableName: process.env.DYNAMODB_TABLE,
+			KeyConditionExpression: `#entityType = :entityType AND #id = :id`,
+			ExpressionAttributeNames: {
+				'#entityType': `entityType`,
+				'#id': `id`,
+			},
+			ExpressionAttributeValues: marshall({
+				':entityType': `Game`,
+				':id': id,
+			}),
+		}
+
+		try {
+			const result = await this.ddbDocClient.send(new QueryCommand(params))
+			if (!result.Items) {
+				return {
+					error: {
+						statusCode: 404,
+						message: `Could not find game with id ${id}`,
+					},
+				}
+			}
+			const game = unmarshall(result.Items[0]) as Game
+			return {
+				data: game,
+			}
+		} catch (error) {
+			console.error(error)
+			return {
+				error: {
+					statusCode: 500,
+					message: `Could not retrieve game with id ${id}`,
+				},
+			}
+		}
+	}
+
 	async create(game: CreateGame): Promise<RepositoryResponse<Game>> {
 		const timestamp = new Date().getTime()
 

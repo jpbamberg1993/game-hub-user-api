@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Genre, genreSchema } from '../genres/genre.schema'
+import { genreSchema } from '../genres/genre.schema'
 
 const gameRatingSchema = z.object({
 	id: z.number(),
@@ -70,6 +70,10 @@ export const createGameSchema = z.object({
 	platforms: z.array(platformSchema),
 	genres: z.array(genreSchema),
 	sourceId: z.number().optional(),
+})
+
+export const getByIdSchema = z.object({
+	id: z.string().uuid(),
 })
 
 export const gameSchema = createGameSchema.extend({
