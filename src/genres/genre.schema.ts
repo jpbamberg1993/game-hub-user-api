@@ -10,14 +10,16 @@ const gameGenreDtoSchema = z.object({
 
 export type gameGenreDto = z.infer<typeof gameGenreDtoSchema>
 
-export const genreSchema = z.object({
-	id: z.string().uuid(),
+export const createGenreSchema = z.object({
 	sourceId: z.number(),
 	name: z.string(),
 	slug: z.string(),
 	gamesCount: z.number(),
 	imageBackground: z.string(),
-	games: gameGenreDtoSchema.array(),
+})
+
+export const genreSchema = createGenreSchema.extend({
+	id: z.string().uuid(),
 })
 
 export type Genre = z.infer<typeof genreSchema>
