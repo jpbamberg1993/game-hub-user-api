@@ -1,12 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { v4 as uuid } from 'uuid'
 import {
+	AddedByStatus,
+	CreateGame,
+	CreateGenre,
+	EsrbRating,
 	Game,
+	GameRating,
 	OEsrbRatingName,
 	Platform,
-	EsrbRating,
-	GameRating,
-	AddedByStatus,
 	RequirementsEn,
 } from '../../src/games/game.schema'
 
@@ -63,10 +65,20 @@ function createPlatform(): Platform {
 	}
 }
 
+function createGenre(): CreateGenre {
+	return {
+		sourceId: faker.number.int({ min: 0, max: 1_000 }),
+		name: faker.lorem.words(),
+		slug: faker.lorem.slug(),
+		gamesCount: faker.number.int({ min: 0, max: 1_000 }),
+		imageBackground: faker.image.urlLoremFlickr(),
+	}
+}
+
 export function createFakeGame(overrides: Partial<Game> = {}): Game {
 	const gameId = uuid()
 
-	const game = {
+	return {
 		slug: faker.lorem.slug(),
 		name: faker.lorem.words({ min: 1, max: 3 }),
 		released: faker.date.past().toISOString(),
@@ -90,6 +102,10 @@ export function createFakeGame(overrides: Partial<Game> = {}): Game {
 			{ length: faker.number.int({ min: 1, max: 5 }) },
 			createPlatform
 		),
+		genres: Array.from(
+			{ length: faker.number.int({ min: 1, max: 5 }) },
+			createGenre
+		),
 		sourceId: faker.number.int(),
 		id: gameId,
 		entityType: `Game`,
@@ -97,6 +113,4 @@ export function createFakeGame(overrides: Partial<Game> = {}): Game {
 		updatedAt: Date.now(),
 		...overrides,
 	}
-
-	return game
 }

@@ -28,10 +28,6 @@ echo "Deploying Lambdas"
 serverless deploy --stage $env
 echo "Lambdas deployed"
 
-#Print currrent environment
-
-sls print --stage $env
-
 #Once complete delete configs from local machine
 
 echo "Deleting config file from local"

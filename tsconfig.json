@@ -7,7 +7,8 @@
     "strict": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "webpack.config.cjs"
   ],
   "exclude": [
     "node_modules"

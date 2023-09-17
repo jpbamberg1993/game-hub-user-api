@@ -89,6 +89,7 @@ export type AddedByStatus = z.infer<typeof addedByStatusSchema>
 export type EsrbRating = z.infer<typeof esrbRatingSchema>
 export type CreateGame = z.infer<typeof createGameSchema>
 export type Game = z.infer<typeof gameSchema>
+export type CreateGenre = z.infer<typeof createGenreSchema>
 export type EsrbRatingName =
 	(typeof OEsrbRatingName)[keyof typeof OEsrbRatingName]
 export type RequirementsEn = z.infer<typeof requirementsEn>
