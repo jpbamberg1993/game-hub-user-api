@@ -1,6 +1,5 @@
 import express from 'express'
 import serverless from 'serverless-http'
-// import cors from 'cors';
 import todoRouter from './todos'
 import gamesRouter from './games'
 import genresRouter from './genres'
@@ -9,7 +8,6 @@ import { snakeToCamelCase } from './middleware/snake-to-camel-case'
 
 const app = express()
 
-// app.use(cors({origin: "http://localhost:3000"}))
 app.use(express.json())
 
 app.use(`/todos`, todoRouter)
