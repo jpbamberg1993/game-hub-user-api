@@ -3,7 +3,7 @@ const slsw = require("serverless-webpack");
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? "development" : "production",
-	entry: `./src/index.ts`, // Assuming your entry file is named handler.ts
+  entry: slsw.lib.entries,
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"]
   },
