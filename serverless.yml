@@ -3,17 +3,15 @@ service: game-hub-user-api
 frameworkVersion: "3"
 
 plugins:
+  - serverless-esbuild
   - serverless-offline
-  - serverless-webpack
   - serverless-dynamodb
-  - serverless-plugin-typescript
 
 custom:
-  webpack:
-    webpackConfig: 'webpack.config.cjs' # Name of webpack configuration file
-    includeModules: false # Node modules configuration for packaging
-    packager: 'npm' # Packager that will be used to package your external modules
-    excludeFiles: src/**/*.test.js # Provide a glob for files to ignore
+  esbuild:
+    bundle: true
+    minify: false
+
   dynamodb:
     start:
       port: 8000

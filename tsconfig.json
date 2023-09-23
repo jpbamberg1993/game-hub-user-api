@@ -1,20 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "lib": ["ES2021"],
     "module": "commonjs",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "strict": true
+    "target": "ES2021",
+    "rootDir": ".",
+    "sourceMap": true,
+    "outDir": "dist",
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*.ts",
-    "webpack.config.cjs"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "types": [
-    "node",
-    "aws-sdk"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
