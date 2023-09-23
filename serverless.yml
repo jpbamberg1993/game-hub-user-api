@@ -4,8 +4,9 @@ frameworkVersion: "3"
 
 plugins:
   - serverless-offline
-  - serverless-dynamodb-local
   - serverless-webpack
+  - serverless-dynamodb
+  - serverless-plugin-typescript
 
 custom:
   webpack:
